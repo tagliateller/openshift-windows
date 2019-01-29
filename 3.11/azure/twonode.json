@@ -157,7 +157,7 @@
       "defaultValue" : false,
       "metadata" : {
         "description" : "Enable OCP aggregated logging for ops"
-     "
+     }
     },
     "winVMSize" : {
       "type" : "string",
