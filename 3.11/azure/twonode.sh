@@ -148,14 +148,14 @@ rm -f /etc/yum.repos.d/rh-cloud.repo
 yum-config-manager --disable epel
 yum-config-manager --disable epel-testing
 sleep 30
-if [[ $RHSMMODE == "usernamepassword" ]]
-then
-   subscription-manager register --username="${RHNUSERNAME}" --password="${RHNPASSWORD}"
-else
-   subscription-manager register --org="${RHNUSERNAME}" --activationkey="${RHNPASSWORD}"
-fi
-subscription-manager attach --pool=$RHNPOOLID
-yum-config-manager --disable rhel-7-server-htb-rpms || true 
+#if [[ $RHSMMODE == "usernamepassword" ]]
+#then
+#   subscription-manager register --username="${RHNUSERNAME}" --password="${RHNPASSWORD}"
+#else
+#   subscription-manager register --org="${RHNUSERNAME}" --activationkey="${RHNPASSWORD}"
+#fi
+#subscription-manager attach --pool=$RHNPOOLID
+#yum-config-manager --disable rhel-7-server-htb-rpms || true 
 yum -y install git
 cd /root
 git clone https://github.com/tagliateller/openshift-windows 
