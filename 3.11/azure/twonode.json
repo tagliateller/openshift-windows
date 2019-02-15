@@ -2,20 +2,6 @@
   "$schema" : "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion" : "1.0.0.0",
   "parameters" : {
-    "_artifactsLocation": {
-			
-      "type": "string",
-			
-      "metadata": {
-				
-      "description": "The base URL where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated.",
-				
-      "artifactsBaseUrl": ""
-			},
-			
-      "defaultValue": "https://raw.githubusercontent.com/tagliateller/openshift-windows/master"
-		
-    }, 
     "adminUsername" : {
       "type" : "string",
       "minLength" : 1,
@@ -38,10 +24,9 @@
     "image" : {
       "type" : "string",
       "allowedValues" : [
-        "rhel",
-        "centos"
+        "rhel"
       ],
-      "defaultValue" : "centos",
+      "defaultValue" : "rhel",
       "metadata" : {
         "description" : "OS to use.Red Hat Enterprise Linux"
       }
@@ -102,7 +87,7 @@
         "Standard_DS13",
         "Standard_DS14",
         "Standard_DS2_v2",
-         "Standard_DS3_v2",
+        "Standard_DS3_v2",
         "Standard_DS4_v2",
         "Standard_DS5_v2",
         "Standard_DS11_v2",
@@ -118,6 +103,38 @@
       ],
       "metadata" : {
         "description" : "The size of the each Node Virtual Machine."
+      }
+    },
+    "rhsmUsernamePasswordOrActivationKey" : {
+      "type" : "string",
+      "minLength" : 1,
+      "defaultValue" : "usernamepassword",
+      "allowedValues" : [
+        "usernamepassword",
+        "activationkey"
+      ],
+      "metadata" : {
+        "description" : "Select whether you want to use your Red Hat Subscription Manager Username and Password or Organization ID and Activation Key to register the RHEL instance to your Red Hat Subscription."
+      }
+    },
+    "RHNUserName" : {
+      "type" : "string",
+      "minLength" : 1,
+      "metadata" : {
+        "description" : "Red Hat Subscription User Name or Email Address or Organization ID"
+      }
+    },
+    "RHNPassword" : {
+      "type" : "securestring",
+      "metadata" : {
+        "description" : "Red Hat Subscription Password or Activation Key"
+      }
+    },
+    "SubscriptionPoolId" : {
+      "type" : "string",
+      "minLength" : 1,
+      "metadata" : {
+        "description" : "Pool ID of the Red Hat subscritpion to use"
       }
     },
     "sshPrivateData" : {
@@ -157,7 +174,7 @@
       "defaultValue" : false,
       "metadata" : {
         "description" : "Enable OCP aggregated logging for ops"
-     }
+      }
     },
     "winVMSize" : {
       "type" : "string",
@@ -177,7 +194,7 @@
     }
   },
   "variables" : {
-    "gituser" : "tagliateller",
+    "gituser" : "openshift",
     "branch" : "master",
     "version" : "3.11",
     "baseTemplateUrl" : "[concat('https://raw.githubusercontent.com/',variables('gituser'),'/openshift-windows/',variables('branch'),'/',variables('version'),'/azure/')]",
@@ -192,12 +209,6 @@
       "offer" : "RHEL",
       "sku" : "7-RAW",
       "version" : "latest"
-    },
-    "centos" : {
-	  "publisher": "Openlogic",
-	  "offer": "CentOS",
-	  "sku": "7.5",
-	  "version": "latest" 
     },
     "baseVMachineTemplateUriOneVm" : "[concat(variables('baseTemplateUrl'), 'twonode.json')]",
     "vmSizesMap" : {
@@ -429,6 +440,7 @@
     "sshKeyPath" : "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
     "publicIpRef" : "[concat('Microsoft.Network/publicIPAddresses/',variables('publicIPAddressName'))]",
     "sQuote" : "\"",
+    "rhsmmode" : "[parameters('rhsmUsernamePasswordOrActivationKey')]",
     "windows" : {
       "publisher" : "MicrosoftWindowsServer",
       "offer" : "WindowsServerSemiAnnual",
@@ -516,7 +528,7 @@
           }
         },
         "storageProfile" : {
-          "imageReference" : "[variables('centos')]",
+          "imageReference" : "[variables('rhel')]",
           "osDisk" : {
             "caching" : "ReadWrite",
             "vhd" : {
@@ -658,7 +670,7 @@
           ]
         },
         "protectedSettings" : {
-          "commandToExecute" : "[ concat('bash twonode.sh ', resourceGroup().name, ' ', resourceGroup().name, ' ',  parameters('adminUsername'), ' ', parameters('adminPassword'), ' ', reference(variables('publicIPAddressName')).dnsSettings.fqdn, ' ', '0', ' ', reference('onevmPublicIP').ipAddress, ' ', variables('sQuote'),  parameters('sshPrivateData'), variables('sQuote'),  ' ', variables('sQuote'), parameters('sshKeyData'), variables('sQuote'),' ',variables('registryStorageName'),' ',listKeys(resourceId('Microsoft.Storage/storageAccounts',variables('registryStorageName')),'2015-06-15').key1,' ',variables('location'),' ',variables('subscriptionid'),' ',variables('tenantid'),' ',parameters('aadclientid'),' ',parameters('aadclientsecret'),' ', parameters('metrics'),' ',parameters('logging'),' ',parameters('opslogging'))]"
+          "commandToExecute" : "[ concat('bash twonode.sh ', resourceGroup().name, ' ', resourceGroup().name, ' ',  parameters('adminUsername'), ' ', parameters('adminPassword'), ' ', reference(variables('publicIPAddressName')).dnsSettings.fqdn, ' ', '0', ' ', reference('onevmPublicIP').ipAddress, ' ', parameters('RHNUserName'), ' ', parameters('RHNPassword'),' ', parameters('SubscriptionPoolId'), ' ',  variables('sQuote'),  parameters('sshPrivateData'), variables('sQuote'),  ' ', variables('sQuote'), parameters('sshKeyData'), variables('sQuote'),' ',variables('registryStorageName'),' ',listKeys(resourceId('Microsoft.Storage/storageAccounts',variables('registryStorageName')),'2015-06-15').key1,' ',variables('location'),' ',variables('subscriptionid'),' ',variables('tenantid'),' ',parameters('aadclientid'),' ',parameters('aadclientsecret'),' ', variables('rhsmmode'),' ',parameters('metrics'),' ',parameters('logging'),' ',parameters('opslogging'))]"
         }
       }
     },

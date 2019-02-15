@@ -15,20 +15,24 @@ export PASSWORD=$4
 export THEHOSTNAME=$5
 export NODECOUNT=$6
 export ROUTEREXTIP=$7
-export SSHPRIVATEDATA=${8}
-export SSHPUBLICDATA=${9}
-export SSHPUBLICDATA2=${10}
-export SSHPUBLICDATA3=${11}
-export REGISTRYSTORAGENAME=${array[12]}
-export REGISTRYKEY=${array[13]}
-export LOCATION=${array[14]}
-export SUBSCRIPTIONID=${array[15]}
-export TENANTID=${array[16]}
-export AADCLIENTID=${array[17]}
-export AADCLIENTSECRET=${array[18]}
-export METRICS=${array[19]}
-export LOGGING=${array[20]}
-export OPSLOGGING=${array[21]}
+export RHNUSERNAME=$8
+export RHNPASSWORD=$9
+export RHNPOOLID=${10}
+export SSHPRIVATEDATA=${11}
+export SSHPUBLICDATA=${12}
+export SSHPUBLICDATA2=${13}
+export SSHPUBLICDATA3=${14}
+export REGISTRYSTORAGENAME=${array[14]}
+export REGISTRYKEY=${array[15]}
+export LOCATION=${array[16]}
+export SUBSCRIPTIONID=${array[17]}
+export TENANTID=${array[18]}
+export AADCLIENTID=${array[19]}
+export AADCLIENTSECRET=${array[20]}
+export RHSMMODE=${array[21]}
+export METRICS=${array[22]}
+export LOGGING=${array[23]}
+export OPSLOGGING=${array[24]}
 export FULLDOMAIN=${THEHOSTNAME#*.*}
 export WILDCARDFQDN=${RESOURCEGROUP}.${FULLDOMAIN}
 export WILDCARDIP=`dig +short ${WILDCARDFQDN}`
@@ -148,17 +152,17 @@ rm -f /etc/yum.repos.d/rh-cloud.repo
 yum-config-manager --disable epel
 yum-config-manager --disable epel-testing
 sleep 30
-#if [[ $RHSMMODE == "usernamepassword" ]]
-#then
-#   subscription-manager register --username="${RHNUSERNAME}" --password="${RHNPASSWORD}"
-#else
-#   subscription-manager register --org="${RHNUSERNAME}" --activationkey="${RHNPASSWORD}"
-#fi
-#subscription-manager attach --pool=$RHNPOOLID
-#yum-config-manager --disable rhel-7-server-htb-rpms || true 
+if [[ $RHSMMODE == "usernamepassword" ]]
+then
+   subscription-manager register --username="${RHNUSERNAME}" --password="${RHNPASSWORD}"
+else
+   subscription-manager register --org="${RHNUSERNAME}" --activationkey="${RHNPASSWORD}"
+fi
+subscription-manager attach --pool=$RHNPOOLID
+yum-config-manager --disable rhel-7-server-htb-rpms || true 
 yum -y install git
 cd /root
-git clone https://github.com/tagliateller/openshift-windows 
+git clone https://github.com/openshift/openshift-windows 
 
 cat <<EOF > /root/openshift-windows/3.11/group_vars/windows.yml
 ansible_user: ${AUSERNAME}
