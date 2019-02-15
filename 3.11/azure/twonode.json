@@ -191,7 +191,17 @@
       "metadata" : {
         "description" : "The size of the each Node Virtual Machine."
       }
-    }
+    },
+	"osType" : {
+		"type" : "string",
+		"defaultValue" : "Linux",
+		"allowedValues" : [
+		  "Linux"
+		]
+	},
+	"osDiskVhdUri" : {
+		"type" : "string"
+	}
   },
   "variables" : {
     "gituser" : "openshift",
@@ -499,6 +509,19 @@
       }
     },
     {
+      "type": "Microsoft.Compute/disks",
+      "apiVersion": "2017-03-30",
+      "name": "[concat(resourceGroup().name, '_OSdisk')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "creationData": {
+          "createOption": "Import",
+          "sourceUri": "[parameters('osDiskVhdUri')]"
+        },
+        "osType": "[parameters('osType')]"
+      }
+    },
+    {
       "apiVersion" : "2017-03-30",
       "type" : "Microsoft.Compute/virtualMachines",
       "name" : "[resourceGroup().name]",
@@ -529,14 +552,13 @@
         },
         "storageProfile" : {
           "imageReference" : "[variables('rhel')]",
-          "osDisk" : {
-            "caching" : "ReadWrite",
-            "vhd" : {
-              "uri" : "[concat('http://', variables('StorageAccountName'), '.blob.core.windows.net/openshiftvmachines/', resourceGroup().name, '.vhd')]"
-            },
-            "name" : "osdisk",
-            "createOption" : "FromImage",
-            "diskSizeGB" : "192"
+          "osDisk": {
+            "osType": "[parameters('osType')]",
+            "caching": "ReadWrite",
+            "createOption": "Attach",
+            "managedDisk": {
+              "id": "[resourceId('Microsoft.Compute/disks', concat(resourceGroup().name, '_OSdisk'))]"
+            }
           },
           "dataDisks" : [
             {
