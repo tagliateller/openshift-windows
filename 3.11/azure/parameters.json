@@ -1,0 +1,37 @@
+		"adminUsername": {
+		"adminPassword": {
+		"sshKeyData": {
+                "image": {
+		"vmSize": {
+    "rhsmUsernamePasswordOrActivationKey" : {
+    "RHNUserName" : {
+    "RHNPassword" : {
+    "SubscriptionPoolId" : {
+                "sshPrivateData": {
+		"aadClientId": {
+		"aadClientSecret": {
+		"metrics": {
+		"logging": {
+		"opslogging": {
+        "winVMSize": {
+	    "osType" : {
+	    "osDiskVhdUri" : {
+
+    "adminUsername" : {
+    "adminPassword" : {
+    "sshKeyData" : {
+    "image" : {
+    "vmSize" : {
+    "rhsmUsernamePasswordOrActivationKey" : {
+    "RHNUserName" : {
+    "RHNPassword" : {
+    "SubscriptionPoolId" : {
+    "sshPrivateData" : {
+    "aadClientId" : {
+    "aadClientSecret" : {
+    "metrics" : {
+    "logging" : {
+    "opslogging" : {
+    "winVMSize" : {
+	"osType" : {
+	"osDiskVhdUri" : {
