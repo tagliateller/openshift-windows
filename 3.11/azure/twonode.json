@@ -512,7 +512,7 @@
       "type": "Microsoft.Compute/disks",
       "apiVersion": "2017-03-30",
       "name": "[concat(resourceGroup().name, '_OSdisk')]",
-      "location": "[parameters('location')]",
+      "location": "[variables('location')]",
       "properties": {
         "creationData": {
           "createOption": "Import",
